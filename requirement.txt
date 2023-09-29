@@ -1,0 +1,9 @@
+numpy
+pandas
+yfinance
+alpha-vantage
+finnhub-python
+#TA-Lib
+#zipline
+pyfolio
+mplfinancepoip
