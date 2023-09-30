@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+START_DATE = '2020-01-01'
+END_DATE = '2022-09-01'
+QUERY_TICKER_LIST = ['AAPL', 'MSFT', 'AMZN', 'GOOG', 'TSLA', 'NVDA', 'AMD', 'ORCL', 'INTC', 'SPCE', 'IBM' ] 
+
 def get_symbol_data(symbol: str, start_date: str, end_date: str, interval: str='1d', source_dict: dict = None) -> dict:
     """
     Pull symbol data from various Python packages.
@@ -61,7 +65,7 @@ def get_symbol_data(symbol: str, start_date: str, end_date: str, interval: str='
             #'pyfolio': returns}
 
 
-def get_symbols_data(symbols: list, start_date: str, end_date: str, interval: str='1d', source_dict: dict = None) -> dict:
+def get_symbols_list_data(symbols: list, start_date: str, end_date: str, interval: str='1d', source_dict: dict = None) -> dict:
     """
     Pull data for multiple symbols from various Python packages.
 
@@ -78,36 +82,63 @@ def get_symbols_data(symbols: list, start_date: str, end_date: str, interval: st
     symbol_data = {}
     for symbol in symbols:
         symbol_data[symbol] = get_symbol_data(symbol, start_date, end_date, interval, source_dict)
+        
     return symbol_data
+
+def sns_plots(data, plot_columns, plot_types, start_date, end_date, sns_style='darkgrid'):
+    """
+    Plots stock data for a given column and time range using Seaborn.
+
+    Args:
+        data (dict): A dictionary containing stock data for different symbols.
+        start_date (str): Start date of the time range in the format 'YYYY-MM-DD'.
+        end_date (str): End date of the time range in the format 'YYYY-MM-DD'.
+        column (str): The column to plot. Must be one of ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume'].
+        sns_style (str, optional): The Seaborn style to use. Must be one of ["darkgrid", "whitegrid", "dark", "white", "ticks"]. Defaults to 'darkgrid'.
+
+    Raises:
+        ValueError: If the provided column or sns_style is invalid.
+
+    Returns:
+        None
+    """
+    # check if sns_style is valid
+    # list of sns styles
+    valid_sns_styles = ["darkgrid", "whitegrid", "dark", "white", "ticks" ]
+    if sns_style not in valid_sns_styles:
+        raise ValueError(f"Invalid column '{column}'. Column must be one of {valid_sns_styles}")
+    sns.set_style(sns_style)
+    
+    # check if column is valid
+    valid_columns = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
+    for column in plot_columns:
+        if column not in valid_columns:
+            raise ValueError(f"Invalid column '{column}'. Column must be one of {valid_columns}")
+
+    # plot data
+    fig, ax = plt.subplots(nrows=len(plot_columns), ncols=1, figsize=(12, 16))
+    for symbol in data:
+        for i, column in enumerate(plot_columns):
+            print(f"Plotting {symbol} : {column}")
+            # plot
+            data[symbol]['yfinance'][column].plot(kind=plot_types[i], ax=ax[i], label=f"{symbol} : {column}", legend=True)      
+            # add label
+            plt.legend(loc='upper left', fontsize=16)
+            # set axis title
+            ax[i].set_title(f"{column} : {start_date} to {end_date}", fontsize=20)
+            plt.xlabel("Date", fontsize=16)
+            plt.ylabel("Price (USD)", fontsize=16)
+            plt.xticks(fontsize=12)
+            plt.yticks(fontsize=12)
+            plt.tight_layout()
+    print(f"Saving plot to market-data.png")     
+    plt.savefig(f'market-data.png', dpi=1200)
+    print(f"Saved")     
+
 
 if __name__ == "__main__":
 
+    # setting ticker list of Apple, Meta, Amazon, Netflix, Google, Microsoft, Tesla, Nvidia, AMD, Oracle, Intel, Space X, IBM,  as a list
+    data = get_symbols_list_data(QUERY_TICKER_LIST, START_DATE, END_DATE)
+    sns_plots(data, ['Close', 'Volume'], ['line', 'line'], START_DATE, END_DATE)
 
-    # setting ticker list of Apple, Meta, Amazon, Netflix, Google, Microsoft, Tesla, Nvidia, AMD, Oracle, Intel, Space X, as a list
-    ticker_list = ['AAPL', 'MSFT', 'AMZN', 'GOOG', 'TSLA', 'NVDA', 'AMD', 'ORCL', 'INTC', 'SPCE']
-    start_date = '2000-01-01'
-    end_date = '2023-09-01'
-
-    data = get_symbols_data(ticker_list, start_date, end_date)
-
-    # list of sns styles
-    sns_styles = ["darkgrid", "whitegrid", "dark", "white", "ticks" ]
-    
-    # set style
-    sns.set_style("darkgrid")
-
-    # plot data
-    fig, ax = plt.subplots(figsize=(12, 8))
-    for symbol in data:
-        # plot
-        data[symbol]['yfinance']['Close'].plot(ax=ax, label=symbol)
-        # add label
-    plt.legend(loc='upper left', fontsize=12)
-    plt.title(f"Closing price from {start_date} to {end_date}", fontsize=16)
-    plt.xlabel("Date", fontsize=14)
-    plt.ylabel("Price (USD)", fontsize=14)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.tight_layout()
-    plt.savefig('stock.png')    
-    print("fin.")
