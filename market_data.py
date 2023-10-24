@@ -1,21 +1,22 @@
 import yfinance as yf
 import pandas_datareader as pdr
-from alpha_vantage.timeseries import TimeSeries
-import finnhub
+#from alpha_vantage.timeseries import TimeSeries
+import pickle
+#import finnhub
 #import talib
 #import zipline as zp
-import pyfolio as pf
-import pandas as pd
-import matplotlib.pyplot as plt
-    
+#import pyfolio as pf
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-START_DATE = '2020-01-01'
-END_DATE = '2022-09-01'
-QUERY_TICKER_LIST = ['AAPL', 'MSFT', 'AMZN', 'GOOG', 'TSLA', 'NVDA', 'AMD', 'ORCL', 'INTC', 'SPCE', 'IBM' ] 
+START_DATE = '2020-09-01'
+END_DATE = '2023-09-29'
 
-def get_symbol_data(symbol: str, start_date: str, end_date: str, interval: str='1d', source_dict: dict = None) -> dict:
+# setting ticker list of Apple, Meta, Amazon, Netflix, Google, Microsoft, Tesla, Nvidia, AMD, Oracle, Intel, Space X, IBM, Palintir  as a list
+QUERY_TICKER_LIST = ['AAPL', 'MSFT', 'AMZN', 'GOOG', 'TSLA', 'NVDA', 'AMD', 'ORCL', 'INTC', 'SPCE', 'IBM', 'PLTR'  ] 
+
+def get_symbol_data(symbol: str, max_period: bool, start_date: str, end_date: str, interval: str='1d', source_dict: dict = None) -> dict:
     """
     Pull symbol data from various Python packages.
 
@@ -34,8 +35,10 @@ def get_symbol_data(symbol: str, start_date: str, end_date: str, interval: str='
                        #'alphavantage': symbol,
                        #'pandas_datareader': symbol,
                        #'finnhub': symbol}
-
-    yf_data = yf.download(source_dict['yfinance'], start=start_date, end=end_date, interval=interval)
+    if max_period:
+            yf_data = yf.download(source_dict['yfinance'], period="max", interval=interval)
+    else:
+        yf_data = yf.download(source_dict['yfinance'], start=start_date, end=end_date, interval=interval)
     
     #av_data = TimeSeries(key='B92FX7PM8WHTQVUV').get_daily(source_dict['alphavantage'], outputsize='full')[0]
     
@@ -133,12 +136,17 @@ def sns_plots(data, plot_columns, plot_types, start_date, end_date, sns_style='d
             plt.tight_layout()
     print(f"Saving plot to market-data.png")     
     plt.savefig(f'market-data.png', dpi=1200)
+    
+    # pickle data
+    print(f"Saving data to market-data.pkl")
+    with open('market-data.pkl', 'wb') as f:
+        pickle.dump(data, f)
+    
     print(f"Saved")     
 
 
 if __name__ == "__main__":
 
-    # setting ticker list of Apple, Meta, Amazon, Netflix, Google, Microsoft, Tesla, Nvidia, AMD, Oracle, Intel, Space X, IBM,  as a list
     data = get_symbols_list_data(QUERY_TICKER_LIST, START_DATE, END_DATE)
     sns_plots(data, ['Close', 'Volume'], ['line', 'line'], START_DATE, END_DATE)
 

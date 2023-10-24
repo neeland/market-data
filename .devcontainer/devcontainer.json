@@ -1,9 +1,9 @@
 //devcontainer.json
 {"name": "market-data", 
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.8",
+  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.9",
   // pip install needed python packages on creation
-  "postCreateCommand": "pip install -r requirements.txt",
+  "postCreateCommand": "pip install -r requirement.txt",
   "mounts": [
     // Mount the local .ssh directory so you can use SSH key-based authentication.
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",

@@ -1,9 +1,12 @@
 numpy
 pandas
+#pickle
 yfinance
-alpha-vantage
-finnhub-python
+#alpha-vantage
+#finnhub-python
 #TA-Lib
 #zipline
-pyfolio
-mplfinancepoip
+#pyfolio
+#mplfinancepoip
+plotly
+streamlit
