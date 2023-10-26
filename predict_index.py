@@ -91,7 +91,7 @@ def predict_stock_price(model, input_encodings):
 
 def main():
     # Load the CSV data using pandas
-    data = load_data('google.csv')
+    data = load_data('data.csv')
 
     # Preprocess the data
     num_cols = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']

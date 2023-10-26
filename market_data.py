@@ -5,7 +5,7 @@ import pickle
 #import finnhub
 #import talib
 #import zipline as zp
-#import pyfolio as pf
+#import pyfolio as pffrom secedgar import filings, FilingType
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -66,6 +66,28 @@ def get_symbol_data(symbol: str, max_period: bool, start_date: str, end_date: st
             #'talib': talib_data,
             #'zipline': benchmark_returns,
             #'pyfolio': returns}
+
+
+def get_symbol_financial_statements(symbol: str, source_dict: dict = None) -> dict:
+    """
+    Pull financial statements for a given symbol using the secedgar package.
+
+    Args:
+    symbol (str): Stock symbol to download
+    source_dict (dict): Optional dictionary containing package sources for each symbol
+
+    Returns:
+    dict: Dictionary containing financial statements
+    """
+
+
+    # 10Q filings for Apple (ticker "aapl")
+    my_filings = filings(cik_lookup=symbol,
+                        filing_type=FilingType.FILING_10Q,
+                        user_agent="Neelan Pather (neelan.pather@gmail.com)")
+    #my_filings.save('/path/to/dir')
+    return my_filings
+
 
 
 def get_symbols_list_data(symbols: list, start_date: str, end_date: str, interval: str='1d', source_dict: dict = None) -> dict:
