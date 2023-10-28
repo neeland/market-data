@@ -10,3 +10,4 @@ yfinance
 #mplfinancepoip
 plotly
 streamlit
+secedgar
